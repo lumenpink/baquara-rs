@@ -130,7 +130,7 @@ pub fn index_all_ecosystem(base_path: &Path, client: &OllamaClient, db: &mut Dat
     }
 
     repos.sort();
-    println!("🌐 Encontrados {} repositórios do ecossistema Baquará em {:?}:", repos.len(), base_path);
+    println!("🌐 Encontrados {} repositórios do ecossistema Baquara em {:?}:", repos.len(), base_path);
     for r in &repos {
         println!("  • {}", r.file_name().unwrap_or_default().to_string_lossy());
     }

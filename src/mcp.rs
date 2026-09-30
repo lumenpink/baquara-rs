@@ -77,7 +77,7 @@ fn handle_request(
                 "tools": [
                     {
                         "name": "baquara_search",
-                        "description": "Busca semântica e léxica ultra-rápida no código-fonte indexado do ecossistema Baquará (GPU). Retorna arquivos, números de linhas e trechos exatos de código.",
+                        "description": "Busca semântica e léxica ultra-rápida no código-fonte indexado do ecossistema Baquara (GPU). Retorna arquivos, números de linhas e trechos exatos de código.",
                         "inputSchema": {
                             "type": "object",
                             "properties": {
@@ -95,7 +95,7 @@ fn handle_request(
                     },
                     {
                         "name": "baquara_ask",
-                        "description": "Consulta o RAG local do ecossistema Baquará. Busca os trechos de código mais relevantes e gera uma resposta técnica sintetizada pelo modelo local qwen2.5-coder:3b na GPU.",
+                        "description": "Consulta o RAG local do ecossistema Baquara. Busca os trechos de código mais relevantes e gera uma resposta técnica sintetizada pelo modelo local qwen2.5-coder:3b na GPU.",
                         "inputSchema": {
                             "type": "object",
                             "properties": {
@@ -124,7 +124,7 @@ fn handle_request(
                     match client.get_embedding(query) {
                         Ok(q_vec) => match db.search_hybrid(query, &q_vec, limit) {
                             Ok(hits) => {
-                                let mut text = format!("Resultados da busca no ecossistema Baquará para: '{}'\n\n", query);
+                                let mut text = format!("Resultados da busca no ecossistema Baquara para: '{}'\n\n", query);
                                 for h in hits {
                                     text.push_str(&format!(
                                         "--- Arquivo: {} (Linhas {}-{}, Score: {:.3}) ---\n{}\n\n",
@@ -152,7 +152,7 @@ fn handle_request(
                                 }
 
                                 let prompt = format!(
-                                    "Você é um arquiteto e engenheiro de software sênior do ecossistema Baquará.\n\
+                                    "Você é um arquiteto e engenheiro de software sênior do ecossistema Baquara.\n\
                                      Use os seguintes trechos de código reais recuperados como base para responder à pergunta.\n\
                                      Responda em português, de forma clara, técnica e concisa, citando os arquivos e linhas relevantes.\n\n\
                                      [TRECHOS DE CÓDIGO]\n{}\n\n\

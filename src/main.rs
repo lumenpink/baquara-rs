@@ -13,7 +13,7 @@ use std::path::PathBuf;
 #[command(name = "baquara")]
 #[command(author = "Lumen <lumen@baquara.local>")]
 #[command(version = "0.1.0")]
-#[command(about = "Motor de IA local, RAG semântico e servidor MCP do ecossistema Baquará (GPU)", long_about = None)]
+#[command(about = "Motor de IA local, RAG semântico e servidor MCP do ecossistema Baquara (GPU)", long_about = None)]
 struct Cli {
     #[command(subcommand)]
     command: Option<Commands>,
@@ -60,7 +60,7 @@ enum Commands {
         path: PathBuf,
     },
 
-    /// Exibe estatísticas da base vetorial do Baquará
+    /// Exibe estatísticas da base vetorial do Baquara
     Status,
 
     /// Apaga o banco de dados vetorial local
@@ -110,7 +110,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Some(Commands::Clear) => {
             let db = Database::open()?;
             db.clear()?;
-            println!("✅ Base vetorial do Baquará apagada com sucesso.");
+            println!("✅ Base vetorial do Baquara apagada com sucesso.");
         }
         Some(Commands::Mcp) => unreachable!(),
         None => {
@@ -205,7 +205,7 @@ fn cmd_ask(query: &str) -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let prompt = format!(
-        "Você é um arquiteto e engenheiro de software sênior do ecossistema Baquará.\n\
+        "Você é um arquiteto e engenheiro de software sênior do ecossistema Baquara.\n\
          Use os seguintes trechos de código do projeto como referência exata para responder à dúvida do usuário.\n\
          Responda em português, de forma clara, técnica e concisa, citando os arquivos e linhas relevantes quando apropriado.\n\n\
          [TRECHOS DE CÓDIGO DO PROJETO]\n{}\n\n\
@@ -269,7 +269,7 @@ fn cmd_status() -> Result<(), Box<dyn std::error::Error>> {
     let (files, chunks, size) = db.count_stats()?;
     let size_mb = size as f64 / (1024.0 * 1024.0);
 
-    println!("📊 Status da IA e Base Vetorial Baquará:");
+    println!("📊 Status da IA e Base Vetorial Baquara:");
     println!("  • Arquivos indexados: {}", files);
     println!("  • Blocos de código (chunks): {}", chunks);
     println!("  • Tamanho do banco SQLite: {:.2} MB", size_mb);

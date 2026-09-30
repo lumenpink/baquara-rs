@@ -10,8 +10,7 @@ cargo build --release
 
 echo "==> [Baquara RS] Instalando binário em ~/.local/bin..."
 mkdir -p ~/.local/bin
-cp target/release/baquara ~/.local/bin/baquara
-chmod +x ~/.local/bin/baquara
+install -m 755 target/release/baquara ~/.local/bin/baquara
 
 # Criar wrapper para modo MCP se chamado como baquara-mcp
 ln -sf ~/.local/bin/baquara ~/.local/bin/baquara-mcp

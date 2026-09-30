@@ -1,5 +1,5 @@
 # 🐗 Baquara RS (`baquara`)
-> **Motor nativo de IA local, RAG semântico híbrido e servidor MCP do ecossistema Baquará.**  
+> **Motor nativo de IA local, RAG semântico híbrido e servidor MCP do ecossistema Baquara.**  
 > Desenvolvido em **Rust** para máxima performance na GPU GeForce GTX 1050 (4 GB VRAM) via Ollama.
 
 ---

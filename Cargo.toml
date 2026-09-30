@@ -2,7 +2,7 @@
 name = "baquara"
 version = "0.1.0"
 edition = "2021"
-description = "Motor de IA local, RAG semântico e servidor MCP para o ecossistema Baquará"
+description = "Motor de IA local, RAG semântico e servidor MCP para o ecossistema Baquara"
 
 [[bin]]
 name = "baquara"
