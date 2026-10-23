@@ -7,5 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- (build) otimizar tamanho de binario com profile.release e habilitar linking estatico musl crt-static (closes #3)
+
 ### Added
 - Adequação aos padrões de engenharia da norma GOST.
