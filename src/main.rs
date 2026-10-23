@@ -75,8 +75,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Se foi chamado diretamente com 'baquara mcp', roda sem print de terminal
     if let Some(Commands::Mcp) = &cli.command {
-        let client = OllamaClient::new().map_err(|e| format!("{}", e))?;
-        let db = Database::open().map_err(|e| format!("{}", e))?;
+        let client = OllamaClient::new().map_err(|e| e.to_string())?;
+        let db = Database::open().map_err(|e| e.to_string())?;
         mcp::run_mcp_server(&client, &db)?;
         return Ok(());
     }

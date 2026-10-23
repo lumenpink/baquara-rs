@@ -153,13 +153,13 @@ impl Database {
             let content: String = row.get(3).unwrap();
             let emb_bytes: Vec<u8> = row.get(4).unwrap();
 
-            if emb_bytes.len() % 4 != 0 {
+            if !emb_bytes.len().is_multiple_of(4) {
                 continue;
             }
 
             let mut vec = Vec::with_capacity(emb_bytes.len() / 4);
-            for chunk in emb_bytes.chunks_exact(4) {
-                vec.push(f32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]));
+            for &chunk in emb_bytes.as_chunks::<4>().0 {
+                vec.push(f32::from_le_bytes(chunk));
             }
 
             // Produto escalar (cosseno já normalizado)
