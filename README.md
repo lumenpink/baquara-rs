@@ -25,6 +25,10 @@ cd /home/lumen/src/baquara-rs
 ./install.sh
 ```
 
+### Compilação Estática e Otimização Soberana (GOST 1.5.0)
+- **Perfil de Release Otimizado:** `opt-level = 3`, `lto = "fat"`, `codegen-units = 1`, `panic = "abort"` e `strip = true`.
+- **Linking Estático musl:** Suporte hermético com `target-feature=+crt-static` para distribuição `static-pie` universal sem dependências de sistema.
+
 ---
 
 ## 💻 Uso no Terminal
