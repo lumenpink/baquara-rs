@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+    tags: ["v*"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  test:
+    name: "Rust — Tests & Checks"
+    runs-on: ubuntu-latest
+    container:
+      image: docker.io/lumenpink/gost-ci-cross:latest
+    steps:
+      - name: "Checkout"
+        uses: https://github.com/actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: "Format Check"
+        run: cargo fmt -- --check
+
+      - name: "Cargo Check"
+        run: cargo check --verbose
+
+      - name: "Cargo Test"
+        run: cargo test --verbose
+
+  build-release:
+    name: "Rust — Release Binaries"
+    runs-on: ubuntu-latest
+    container:
+      image: docker.io/lumenpink/gost-ci-cross:latest
+    needs: [test]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: "Checkout"
+        uses: https://github.com/actions/checkout@v4
+
+      - name: "Build Release"
+        run: |
+          export RUSTFLAGS="-C target-feature=+crt-static"
+          cargo build --release --target x86_64-unknown-linux-musl --verbose
