@@ -7,14 +7,24 @@ use std::path::Path;
 use walkdir::WalkDir;
 
 pub const SUPPORTED_EXTS: &[&str] = &[
-    "go", "rs", "php", "py", "js", "ts", "jsx", "tsx",
-    "sh", "bash", "zsh", "md", "html", "css", "sql",
-    "json", "yml", "yaml", "toml", "c", "h", "cpp"
+    "go", "rs", "php", "py", "js", "ts", "jsx", "tsx", "sh", "bash", "zsh", "md", "html", "css",
+    "sql", "json", "yml", "yaml", "toml", "c", "h", "cpp",
 ];
 
 pub const IGNORE_DIRS: &[&str] = &[
-    ".git", "vendor", "node_modules", "target", "dist", "build",
-    ".cache", "tmp", "__pycache__", ".venv", "venv", ".idea", ".vscode"
+    ".git",
+    "vendor",
+    "node_modules",
+    "target",
+    "dist",
+    "build",
+    ".cache",
+    "tmp",
+    "__pycache__",
+    ".venv",
+    "venv",
+    ".idea",
+    ".vscode",
 ];
 
 pub fn chunk_text(content: &str, max_lines: usize, overlap: usize) -> Vec<(usize, usize, String)> {
@@ -42,8 +52,14 @@ pub fn chunk_text(content: &str, max_lines: usize, overlap: usize) -> Vec<(usize
     chunks
 }
 
-pub fn index_directory(target_path: &Path, client: &OllamaClient, db: &mut Database) -> Result<(usize, usize), String> {
-    let target_path = target_path.canonicalize().map_err(|e| format!("Caminho inválido: {}", e))?;
+pub fn index_directory(
+    target_path: &Path,
+    client: &OllamaClient,
+    db: &mut Database,
+) -> Result<(usize, usize), String> {
+    let target_path = target_path
+        .canonicalize()
+        .map_err(|e| format!("Caminho inválido: {}", e))?;
     let exts: HashSet<&str> = SUPPORTED_EXTS.iter().copied().collect();
 
     println!("📁 Analisando arquivos em {:?}...", target_path);
@@ -53,7 +69,9 @@ pub fn index_directory(target_path: &Path, client: &OllamaClient, db: &mut Datab
         .into_iter()
         .filter_entry(|e| {
             let name = e.file_name().to_string_lossy();
-            if e.file_type().is_dir() && (IGNORE_DIRS.contains(&name.as_ref()) || name.starts_with('.')) {
+            if e.file_type().is_dir()
+                && (IGNORE_DIRS.contains(&name.as_ref()) || name.starts_with('.'))
+            {
                 return false;
             }
             true
@@ -114,11 +132,18 @@ pub fn index_directory(target_path: &Path, client: &OllamaClient, db: &mut Datab
         }
     }
 
-    println!("✅ Indexação em {:?} concluída: {} novos/atualizados, {} inalterados.", target_path, indexed, skipped);
+    println!(
+        "✅ Indexação em {:?} concluída: {} novos/atualizados, {} inalterados.",
+        target_path, indexed, skipped
+    );
     Ok((indexed, skipped))
 }
 
-pub fn index_all_ecosystem(base_path: &Path, client: &OllamaClient, db: &mut Database) -> Result<(), String> {
+pub fn index_all_ecosystem(
+    base_path: &Path,
+    client: &OllamaClient,
+    db: &mut Database,
+) -> Result<(), String> {
     let entries = fs::read_dir(base_path).map_err(|e| e.to_string())?;
     let mut repos = Vec::new();
 
@@ -130,9 +155,16 @@ pub fn index_all_ecosystem(base_path: &Path, client: &OllamaClient, db: &mut Dat
     }
 
     repos.sort();
-    println!("🌐 Encontrados {} repositórios do ecossistema Baquara em {:?}:", repos.len(), base_path);
+    println!(
+        "🌐 Encontrados {} repositórios do ecossistema Baquara em {:?}:",
+        repos.len(),
+        base_path
+    );
     for r in &repos {
-        println!("  • {}", r.file_name().unwrap_or_default().to_string_lossy());
+        println!(
+            "  • {}",
+            r.file_name().unwrap_or_default().to_string_lossy()
+        );
     }
     println!();
 

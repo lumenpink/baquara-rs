@@ -55,7 +55,12 @@ impl OllamaClient {
 
         // 2. Tenta descobrir o IP da rede interna do Docker do container ollama
         let output = Command::new("docker")
-            .args(["inspect", "-f", "{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}", "ollama"])
+            .args([
+                "inspect",
+                "-f",
+                "{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}",
+                "ollama",
+            ])
             .output()
             .ok()?;
 

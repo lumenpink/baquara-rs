@@ -113,8 +113,14 @@ fn handle_request(
         }
         "tools/call" => {
             let params = req.params.as_ref().and_then(|p| p.as_object());
-            let name = params.and_then(|p| p.get("name")).and_then(|n| n.as_str()).unwrap_or("");
-            let args = params.and_then(|p| p.get("arguments")).cloned().unwrap_or(json!({}));
+            let name = params
+                .and_then(|p| p.get("name"))
+                .and_then(|n| n.as_str())
+                .unwrap_or("");
+            let args = params
+                .and_then(|p| p.get("arguments"))
+                .cloned()
+                .unwrap_or(json!({}));
 
             let tool_res = match name {
                 "baquara_search" => {
@@ -124,7 +130,10 @@ fn handle_request(
                     match client.get_embedding(query) {
                         Ok(q_vec) => match db.search_hybrid(query, &q_vec, limit) {
                             Ok(hits) => {
-                                let mut text = format!("Resultados da busca no ecossistema Baquara para: '{}'\n\n", query);
+                                let mut text = format!(
+                                    "Resultados da busca no ecossistema Baquara para: '{}'\n\n",
+                                    query
+                                );
                                 for h in hits {
                                     text.push_str(&format!(
                                         "--- Arquivo: {} (Linhas {}-{}, Score: {:.3}) ---\n{}\n\n",
@@ -133,9 +142,13 @@ fn handle_request(
                                 }
                                 json!({ "content": [{ "type": "text", "text": text }] })
                             }
-                            Err(e) => json!({ "isError": true, "content": [{ "type": "text", "text": format!("Erro no banco de dados: {}", e) }] })
+                            Err(e) => {
+                                json!({ "isError": true, "content": [{ "type": "text", "text": format!("Erro no banco de dados: {}", e) }] })
+                            }
                         },
-                        Err(e) => json!({ "isError": true, "content": [{ "type": "text", "text": format!("Erro ao gerar embedding: {}", e) }] })
+                        Err(e) => {
+                            json!({ "isError": true, "content": [{ "type": "text", "text": format!("Erro ao gerar embedding: {}", e) }] })
+                        }
                     }
                 }
                 "baquara_ask" => {
@@ -161,16 +174,26 @@ fn handle_request(
                                 );
 
                                 match client.generate(&prompt, None) {
-                                    Ok(ans) => json!({ "content": [{ "type": "text", "text": ans }] }),
-                                    Err(e) => json!({ "isError": true, "content": [{ "type": "text", "text": format!("Erro na inferência: {}", e) }] })
+                                    Ok(ans) => {
+                                        json!({ "content": [{ "type": "text", "text": ans }] })
+                                    }
+                                    Err(e) => {
+                                        json!({ "isError": true, "content": [{ "type": "text", "text": format!("Erro na inferência: {}", e) }] })
+                                    }
                                 }
                             }
-                            Err(e) => json!({ "isError": true, "content": [{ "type": "text", "text": format!("Erro na busca: {}", e) }] })
+                            Err(e) => {
+                                json!({ "isError": true, "content": [{ "type": "text", "text": format!("Erro na busca: {}", e) }] })
+                            }
                         },
-                        Err(e) => json!({ "isError": true, "content": [{ "type": "text", "text": format!("Erro de embedding: {}", e) }] })
+                        Err(e) => {
+                            json!({ "isError": true, "content": [{ "type": "text", "text": format!("Erro de embedding: {}", e) }] })
+                        }
                     }
                 }
-                _ => json!({ "isError": true, "content": [{ "type": "text", "text": format!("Ferramenta desconhecida: {}", name) }] })
+                _ => {
+                    json!({ "isError": true, "content": [{ "type": "text", "text": format!("Ferramenta desconhecida: {}", name) }] })
+                }
             };
 
             send_response(req.id.clone(), Some(tool_res), None, writer)?;

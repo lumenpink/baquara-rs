@@ -164,7 +164,10 @@ fn cmd_search(query: &str, limit: usize) -> Result<(), Box<dyn std::error::Error
             h.file_path.clone()
         };
 
-        println!("\n  📄 {} (Linhas {}-{}) - Score: {:.3}", display_path, h.start_line, h.end_line, h.score);
+        println!(
+            "\n  📄 {} (Linhas {}-{}) - Score: {:.3}",
+            display_path, h.start_line, h.end_line, h.score
+        );
         println!("  {}", "-".repeat(60));
         for line in h.content.lines().take(10) {
             println!("    {}", line);
@@ -197,7 +200,10 @@ fn cmd_ask(query: &str) -> Result<(), Box<dyn std::error::Error>> {
         } else {
             h.file_path.clone()
         };
-        println!("  • {} (L{}-{}) - Score: {:.3}", display_path, h.start_line, h.end_line, h.score);
+        println!(
+            "  • {} (L{}-{}) - Score: {:.3}",
+            display_path, h.start_line, h.end_line, h.score
+        );
         context.push_str(&format!(
             "--- Arquivo: {} (Linhas {}-{}) ---\n{}\n\n",
             h.file_path, h.start_line, h.end_line, h.content
@@ -257,7 +263,10 @@ fn cmd_pipe() -> Result<(), Box<dyn std::error::Error>> {
     io::stdin().read_to_string(&mut content)?;
     let content = content.trim();
 
-    let prompt = format!("Analise o seguinte conteúdo técnico:\n\n```\n{}\n```", content);
+    let prompt = format!(
+        "Analise o seguinte conteúdo técnico:\n\n```\n{}\n```",
+        content
+    );
     let client = OllamaClient::new()?;
     let ans = client.generate(&prompt, None)?;
     println!("{}", ans);

@@ -1,7 +1,7 @@
+use regex::Regex;
 use rusqlite::{params, Connection};
 use std::fs;
 use std::path::PathBuf;
-use regex::Regex;
 
 pub struct Database {
     conn: Connection,
@@ -27,7 +27,8 @@ impl Database {
 
     pub fn open() -> Result<Self, String> {
         let path = Self::get_db_path();
-        let conn = Connection::open(&path).map_err(|e| format!("Falha ao abrir SQLite em {:?}: {}", path, e))?;
+        let conn = Connection::open(&path)
+            .map_err(|e| format!("Falha ao abrir SQLite em {:?}: {}", path, e))?;
 
         conn.execute_batch(
             "
@@ -47,29 +48,37 @@ impl Database {
             );
             CREATE INDEX IF NOT EXISTS idx_chunks_file ON chunks(file_path);
             ",
-        ).map_err(|e| format!("Falha ao inicializar tabelas: {}", e))?;
+        )
+        .map_err(|e| format!("Falha ao inicializar tabelas: {}", e))?;
 
         Ok(Self { conn })
     }
 
     pub fn get_file_sha(&self, path: &str) -> Option<String> {
-        let mut stmt = self.conn.prepare("SELECT sha256 FROM files WHERE path = ?").ok()?;
+        let mut stmt = self
+            .conn
+            .prepare("SELECT sha256 FROM files WHERE path = ?")
+            .ok()?;
         stmt.query_row(params![path], |row| row.get(0)).ok()
     }
 
     pub fn delete_file_chunks(&mut self, path: &str) -> Result<(), String> {
-        self.conn.execute("DELETE FROM chunks WHERE file_path = ?", params![path])
+        self.conn
+            .execute("DELETE FROM chunks WHERE file_path = ?", params![path])
             .map_err(|e| e.to_string())?;
-        self.conn.execute("DELETE FROM files WHERE path = ?", params![path])
+        self.conn
+            .execute("DELETE FROM files WHERE path = ?", params![path])
             .map_err(|e| e.to_string())?;
         Ok(())
     }
 
     pub fn insert_file(&mut self, path: &str, sha: &str, mtime: f64) -> Result<(), String> {
-        self.conn.execute(
-            "INSERT OR REPLACE INTO files (path, sha256, mtime) VALUES (?, ?, ?)",
-            params![path, sha, mtime],
-        ).map_err(|e| e.to_string())?;
+        self.conn
+            .execute(
+                "INSERT OR REPLACE INTO files (path, sha256, mtime) VALUES (?, ?, ?)",
+                params![path, sha, mtime],
+            )
+            .map_err(|e| e.to_string())?;
         Ok(())
     }
 
@@ -95,11 +104,17 @@ impl Database {
     }
 
     pub fn count_stats(&self) -> Result<(usize, usize, u64), String> {
-        let n_files: usize = self.conn.query_row("SELECT count(*) FROM files", [], |r| r.get(0))
+        let n_files: usize = self
+            .conn
+            .query_row("SELECT count(*) FROM files", [], |r| r.get(0))
             .map_err(|e| e.to_string())?;
-        let n_chunks: usize = self.conn.query_row("SELECT count(*) FROM chunks", [], |r| r.get(0))
+        let n_chunks: usize = self
+            .conn
+            .query_row("SELECT count(*) FROM chunks", [], |r| r.get(0))
             .map_err(|e| e.to_string())?;
-        let size = fs::metadata(Self::get_db_path()).map(|m| m.len()).unwrap_or(0);
+        let size = fs::metadata(Self::get_db_path())
+            .map(|m| m.len())
+            .unwrap_or(0);
         Ok((n_files, n_chunks, size))
     }
 
@@ -111,13 +126,20 @@ impl Database {
         Ok(())
     }
 
-    pub fn search_hybrid(&self, query: &str, q_vec: &[f32], top_k: usize) -> Result<Vec<SearchHit>, String> {
-        let mut stmt = self.conn.prepare(
-            "SELECT file_path, start_line, end_line, content, embedding FROM chunks"
-        ).map_err(|e| e.to_string())?;
+    pub fn search_hybrid(
+        &self,
+        query: &str,
+        q_vec: &[f32],
+        top_k: usize,
+    ) -> Result<Vec<SearchHit>, String> {
+        let mut stmt = self
+            .conn
+            .prepare("SELECT file_path, start_line, end_line, content, embedding FROM chunks")
+            .map_err(|e| e.to_string())?;
 
         let re = Regex::new(r"[a-zA-Z0-9_\$]{3,}").unwrap();
-        let terms: Vec<String> = re.find_iter(query)
+        let terms: Vec<String> = re
+            .find_iter(query)
             .map(|m| m.as_str().to_lowercase())
             .collect();
 
@@ -145,7 +167,10 @@ impl Database {
 
             // Boost léxico para identificadores exatos
             let c_lower = content.to_lowercase();
-            let kw_hits = terms.iter().filter(|t| c_lower.contains(t.as_str())).count();
+            let kw_hits = terms
+                .iter()
+                .filter(|t| c_lower.contains(t.as_str()))
+                .count();
             let final_score = v_sim + (0.05 * (kw_hits.min(6) as f32));
 
             scored_chunks.push(SearchHit {
@@ -158,7 +183,11 @@ impl Database {
         }
 
         // Ordenar por score decrescente
-        scored_chunks.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
+        scored_chunks.sort_by(|a, b| {
+            b.score
+                .partial_cmp(&a.score)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
         let top_candidates: Vec<SearchHit> = scored_chunks.into_iter().take(top_k).collect();
 
         // Fusão contígua de chunks adjacentes do mesmo arquivo
@@ -204,7 +233,11 @@ impl Database {
             merged.extend(file_merged);
         }
 
-        merged.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
+        merged.sort_by(|a, b| {
+            b.score
+                .partial_cmp(&a.score)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
         merged
     }
 }
