@@ -71,14 +71,13 @@ jobs:
 
       - name: "Compile Baquara Multiarch CLI Binaries"
         run: |
-          export RUSTFLAGS="-C target-feature=+crt-static"
           echo "★ [1/3] Compilando x86_64-unknown-linux-musl (Linux AMD64)..."
-          cargo zigbuild --release --target x86_64-unknown-linux-musl --bin baquara || \
-            cargo build --release --target x86_64-unknown-linux-musl --bin baquara
+          RUSTFLAGS="-C target-feature=+crt-static" cargo zigbuild --release --target x86_64-unknown-linux-musl --bin baquara || \
+            RUSTFLAGS="-C target-feature=+crt-static" cargo build --release --target x86_64-unknown-linux-musl --bin baquara
 
           echo "★ [2/3] Compilando aarch64-unknown-linux-musl (Linux ARM64)..."
-          cargo zigbuild --release --target aarch64-unknown-linux-musl --bin baquara || \
-            cargo build --release --target aarch64-unknown-linux-musl --bin baquara
+          RUSTFLAGS="-C target-feature=+crt-static" cargo zigbuild --release --target aarch64-unknown-linux-musl --bin baquara || \
+            RUSTFLAGS="-C target-feature=+crt-static" cargo build --release --target aarch64-unknown-linux-musl --bin baquara
 
           echo "★ [3/3] Compilando x86_64-pc-windows-gnu (Windows AMD64)..."
           cargo zigbuild --release --target x86_64-pc-windows-gnu --bin baquara || \
